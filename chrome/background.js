@@ -4,7 +4,14 @@ const targetAdIds = [
   "VIMAL",
   "MY11C",
   "POKERBAAZI",
-  "PR-25-011191_TATAIPL2025_IPL18_ipl18HANGOUTEVR20sEng_English_VCTA_NA" //sidhu ipl ad
+  "PR-25-011191_TATAIPL2025_IPL18_ipl18HANGOUTEVR20sEng_English_VCTA_NA",
+  "RUPAY_SNEAKER_HRITIK", // "RUPAY_SNEAKER_HRITIK_HIN_20_20_APR"
+  "GILLETTE_MACH_3", // "GILLETTE_MACH_3_HIN_20_180425"
+  "RUPAY_CREDIT_CARD",
+  "CAMPA",
+  "POLICY_BAZAAR",
+  "IPLSIDHUMOB",
+  "TATAIPL2025"
 ];
 
 const durationRegexes = [
@@ -13,11 +20,13 @@ const durationRegexes = [
 ];
 
 console.log("Hotstar Adblocker extension loaded");
+console.log("=== Ad Detection ===");
 
 chrome.webRequest.onBeforeRequest.addListener(
   async (details) => {
     const url = new URL(details.url);
     const adName = url.searchParams.get("adName");
+    console.log("=== Ad Detection started===");
     console.log(`Ad id: ${adName}`);
 
     if (adName) {
@@ -56,6 +65,27 @@ chrome.webRequest.onBeforeRequest.addListener(
     }
   },
   {
-    urls: ["*://bifrost-api.hotstar.com/v1/events/track/ct_impression*"]
+    urls: [
+      "*://bifrost-api.hotstar.com/v1/events/track/ct_impression*",
+      "*://bifrost-api.hotstar.com/v2/events/track/ct_impression*"
+    ]
+  }
+);
+
+// Add this new listener at the end of the file
+chrome.webRequest.onBeforeRequest.addListener(
+  (details) => {
+    if (details.url.includes('hotstar') && details.url.includes('ad')) {
+      const url = new URL(details.url);
+      const adName = url.searchParams.get("adName");
+      console.log('=== Hotstar Request Detected ===');
+      console.log('URL:', details.url);
+      console.log('susp Ad Name:', adName);
+      console.log('Timestamp:', new Date().toISOString());
+      console.log('========================');
+    }
+  },
+  {
+    urls: ["*://*.hotstar.com/*"]
   }
 );
